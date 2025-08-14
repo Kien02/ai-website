@@ -659,6 +659,36 @@
             }
         }
 
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-menu span {
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .auth-buttons {
+                display: none; /* Ẩn trên mobile, hiện trong menu */
+            }
+            
+            .nav-menu.active .auth-buttons {
+                display: flex;
+                flex-direction: column;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #e2e8f0;
+            }
+        }
         /* Scroll to top button */
         .scroll-top {
             position: fixed;
@@ -692,22 +722,26 @@
     <!-- Header -->
     <header class="header">
         <nav class="nav container">
-            <a href="#" class="logo">
-                <i class="fas fa-brain"></i> AI World
-            </a>
-            <ul class="nav-menu">
-                <li><a href="#home" class="nav-link">Trang chủ</a></li>
-                <li><a href="#about" class="nav-link">Giới thiệu</a></li>
-                <li><a href="#applications" class="nav-link">Ứng dụng</a></li>
-                <li><a href="#news" class="nav-link">Tin tức</a></li>
-                <li><a href="#contact" class="nav-link">Liên hệ</a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
+    <a href="#" class="logo">
+        <i class="fas fa-brain"></i> AI World
+    </a>
+    <ul class="nav-menu">
+        <li><a href="#home" class="nav-link">Trang chủ</a></li>
+        <li><a href="#about" class="nav-link">Giới thiệu</a></li>
+        <li><a href="#applications" class="nav-link">Ứng dụng</a></li>
+        <li><a href="#news" class="nav-link">Tin tức</a></li>
+        <li><a href="#contact" class="nav-link">Liên hệ</a></li>
+    </ul>
+    <!-- Thêm phần auth buttons -->
+    <div id="auth-buttons" class="auth-buttons">
+        <!-- Sẽ được cập nhật bởi JavaScript -->
+    </div>
+    <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    </nav>
     </header>
 
     <!-- Hero Section -->
@@ -1048,6 +1082,26 @@
             }
         });
 
+
+        function requireAuth(callback) {
+            const user = checkUserAuth();
+            if (user) {
+                callback();
+            } else {
+                alert('Vui lòng đăng nhập để truy cập tính năng này!');
+                window.location.href = 'auth.html';
+            }
+        }
+
+        // Ví dụ sử dụng cho button premium
+        document.querySelector('.premium-content-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            requireAuth(() => {
+                // Show premium content
+                console.log('Hiển thị nội dung premium');
+            });
+        });
+        
         // =========================
         // TYPING EFFECT FOR HERO TITLE
         // =========================
@@ -1304,6 +1358,47 @@
             document.body.classList.add('js-enabled');
         });
     </script>
+
+    <script>
+// Check if user is logged in
+function checkUserAuth() {
+    const userData = localStorage.getItem('aiworld_user') || sessionStorage.getItem('aiworld_user');
+    return userData ? JSON.parse(userData) : null;
+}
+
+// Update UI based on auth status
+function updateAuthUI() {
+    const user = checkUserAuth();
+    const authButtons = document.getElementById('auth-buttons');
+    
+    if (user) {
+        // User is logged in
+        authButtons.innerHTML = `
+            <div class="user-menu">
+                <span>Xin chào, ${user.name || user.email}</span>
+                <button onclick="logout()" class="btn btn-outline">Đăng xuất</button>
+            </div>
+        `;
+    } else {
+        // User not logged in
+        authButtons.innerHTML = `
+            <a href="auth.html" class="btn btn-outline">Đăng nhập</a>
+            <a href="auth.html#register" class="btn btn-primary">Đăng ký</a>
+        `;
+    }
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem('aiworld_user');
+    sessionStorage.removeItem('aiworld_user');
+    updateAuthUI();
+    alert('Đã đăng xuất thành công!');
+}
+
+// Check auth when page loads
+document.addEventListener('DOMContentLoaded', updateAuthUI);
+</script>
 
     <!-- Additional CSS for enhanced effects -->
     <style>

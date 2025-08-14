@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | AI World</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="index.html" rel="stylesheet">
+    <style>
+        /* =========================
+           CSS VARIABLES & RESET
+        ========================= */
+        :root {
+            --primary-blue: #2563eb;
+            --light-blue: #60a5fa;
+            --dark-blue: #1d4ed8;
+            --white: #ffffff;
+            --light-gray: #f8fafc;
+            --dark-gray: #1e293b;
+            --text-gray: #64748b;
+            --error-red: #ef4444;
+            --success-green: #10b981;
+            --warning-yellow: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           UTILITY CLASSES
+        ========================= */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-google {
+            background: var(--white);
+            color: var(--dark-gray);
+            border: 1px solid #dadce0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-google:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Animation classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            opacity: 0;
+            transform: translateX(-30px);
+            animation: slideIn 0.8s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* =========================
+           AUTH CONTAINER
+        ========================= */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .auth-wrapper {
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        /* =========================
+           LEFT PANEL (BRANDING)
+        ========================= */
+        .auth-brand {
+            background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-brand::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%23ffffff" fill-opacity="0.05" cx="50" cy="50" r="40"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .brand-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .brand-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .brand-features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .brand-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .brand-features i {
+            margin-right: 0.75rem;
+            font-size: 1rem;
+            width: 20px;
+        }
+
+        /* =========================
+           RIGHT PANEL (FORM)
+        ========================= */
+        .auth-form {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: var(--text-gray);
+            font-size: 1rem;
+        }
+
+        .form-subtitle a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-subtitle a:hover {
+            text-decoration: underline;
+        }
+
+        /* =========================
+           FORM ELEMENTS
+        ========================= */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error-red);
+        }
+
+        .form-input.success {
+            border-color: var(--success-green);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            cursor: pointer;
+        }
+
+        .password-toggle {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Error and success messages */
+        .form-message {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-message i {
+            margin-right: 0.5rem;
+        }
+
+        .form-message.error {
+            color: var(--error-red);
+        }
+
+        .form-message.success {
+            color: var(--success-green);
+        }
+
+        /* =========================
+           FORM OPTIONS
+        ========================= */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: var(--primary-blue);
+        }
+
+        .forgot-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        /* =========================
+           SOCIAL LOGIN
+        ========================= */
+        .social-login {
+            margin: 1.5rem 0;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .social-buttons {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: var(--white);
+            color: var(--dark-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            background: var(--light-gray);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-btn i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .social-btn.google i {
+            color: #db4437;
+        }
+
+        .social-btn.facebook i {
+            color: #4267b2;
+        }
+
+        .social-btn.twitter i {
+            color: #1da1f2;
+        }
+
+        /* =========================
+           FORM SWITCHING
+        ========================= */
+        .form-switch {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .switch-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .switch-link:hover {
+            text-decoration: underline;
+        }
+
+        /* =========================
+           LOADING STATES
+        ========================= */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid transparent;
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* =========================
+           STRENGTH METER
+        ========================= */
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .strength-meter {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-fill.weak {
+            width: 33%;
+            background: var(--error-red);
+        }
+
+        .strength-fill.medium {
+            width: 66%;
+            background: var(--warning-yellow);
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background: var(--success-green);
+        }
+
+        .strength-text {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+        }
+
+        /* =========================
+           RESPONSIVE DESIGN
+        ========================= */
+        @media (max-width: 768px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+                margin: 1rem;
+                max-width: none;
+            }
+
+            .auth-brand {
+                padding: 2rem;
+                min-height: 200px;
+            }
+
+            .brand-title {
+                font-size: 1.5rem;
+            }
+
+            .brand-subtitle {
+                font-size: 1rem;
+            }
+
+            .auth-form {
+                padding: 2rem;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 1rem 0;
+            }
+
+            .auth-wrapper {
+                margin: 0.5rem;
+            }
+
+            .auth-form {
+                padding: 1.5rem;
+            }
+
+            .auth-brand {
+                padding: 1.5rem;
+            }
+        }
+
+        /* =========================
+           ANIMATIONS
+        ========================= */
+        .auth-wrapper {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        /* =========================
+           DARK MODE SUPPORT
+        ========================= */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --white: #1a1a1a;
+                --dark-gray: #e5e5e5;
+                --light-gray: #2a2a2a;
+                --text-gray: #a0a0a0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <!-- Left Panel - Branding -->
+            <div class="auth-brand">
+                <div class="brand-content">
+                    <i class="fas fa-brain brand-logo"></i>
+                    <h1 class="brand-title">Chào mừng đến với AI World</h1>
+                    <p class="brand-subtitle">Khám phá thế giới trí tuệ nhân tạo cùng chúng tôi</p>
+                    
+                    <ul class="brand-features">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Truy cập toàn bộ nội dung AI</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Nhận tin tức mới nhất</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Tham gia cộng đồng AI</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Học tập và phát triển</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Panel - Login Form -->
+            <div class="auth-form" id="loginForm">
+                <div class="form-header">
+                    <h2 class="form-title">Đăng nhập</h2>
+                    <p class="form-subtitle">
+                        Chưa có tài khoản? 
+                        <a href="#" onclick="switchToRegister()">Đăng ký ngay</a>
+                    </p>
+                </div>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Email</label>
+                        <input 
+                            type="email" 
+                            id="login-email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="Nhập email của bạn"
+                            required
+                        >
+                        <div class="form-message error" id="login-email-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Mật khẩu</label>
+                        <div style="position: relative;">
+                            <input 
+                                type="password" 
+                                id="login-password" 
+                                name="password" 
+                                class="form-input" 
+                                placeholder="Nhập mật khẩu"
+                                required
+                            >
+                            <i class="fas fa-eye password-toggle input-icon" onclick="togglePassword('login-password')"></i>
+                        </div>
+                        <div class="form-message error" id="login-password-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember-me">
+                            <label for="remember-me">Ghi nhớ đăng nhập</label>
+                        </div>
+                        <a href="#" class="forgot-link" onclick="showForgotPassword()">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </button>
+                </form>
+
+                <!-- Social Login -->
+                <div class="social-login">
+                    <div class="divider">
+                        <span>Hoặc đăng nhập bằng</span>
+                    </div>
+                    
+                    <div class="social-buttons">
+                        <a href="#" class="social-btn google" onclick="socialLogin('google')">
+                            <i class="fab fa-google"></i>
+                            Đăng nhập với Google
+                        </a>
+                        <a href="#" class="social-btn facebook" onclick="socialLogin('facebook')">
+                            <i class="fab fa-facebook-f"></i>
+                            Đăng nhập với Facebook
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Register Form (Hidden by default) -->
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <div class="form-header">
+                    <h2 class="form-title">Đăng ký</h2>
+                    <p class="form-subtitle">
+                        Đã có tài khoản? 
+                        <a href="#" onclick="switchToLogin()">Đăng nhập ngay</a>
+                    </p>
+                </div>
+
+                <form id="register-form">
+                    <div class="form-group">
+                        <label class="form-label" for="register-fullname">Họ và tên</label>
+                        <input 
+                            type="text" 
+                            id="register-fullname" 
+                            name="fullname" 
+                            class="form-input" 
+                            placeholder="Nhập họ và tên"
+                            required
+                        >
+                        <div class="form-message error" id="register-fullname-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="register-email">Email</label>
+                        <input 
+                            type="email" 
+                            id="register-email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="Nhập email của bạn"
+                            required
+                        >
+                        <div class="form-message error" id="register-email-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="register-password">Mật khẩu</label>
+                        <div style="position: relative;">
+                            <input 
+                                type="password" 
+                                id="register-password" 
+                                name="password" 
+                                class="form-input" 
+                                placeholder="Tạo mật khẩu mạnh"
+                                required
+                            >
+                            <i class="fas fa-eye password-toggle input-icon" onclick="togglePassword('register-password')"></i>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-meter">
+                                <div class="strength-fill" id="strength-fill"></div>
+                            </div>
+                            <div class="strength-text" id="strength-text"></div>
+                        </div>
+                        <div class="form-message error" id="register-password-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="register-confirm-password">Xác nhận mật khẩu</label>
+                        <div style="position: relative;">
+                            <input 
+                                type="password" 
+                                id="register-confirm-password" 
+                                name="confirmPassword" 
+                                class="form-input" 
+                                placeholder="Nhập lại mật khẩu"
+                                required
+                            >
+                            <i class="fas fa-eye password-toggle input-icon" onclick="togglePassword('register-confirm-password')"></i>
+                        </div>
+                        <div class="form-message error" id="register-confirm-password-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="agree-terms" required>
+                            <label for="agree-terms">
+                                Tôi đồng ý với 
+                                <a href="#" style="color: var(--primary-blue);">Điều khoản dịch vụ</a> 
+                                và 
+                                <a href="#" style="color: var(--primary-blue);">Chính sách bảo mật</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="register-btn">
+                        <i class="fas fa-user-plus"></i> Tạo tài khoản
+                    </button>
+                </form>
+
+                <!-- Social Register -->
+                <div class="social-login">
+                    <div class="divider">
+                        <span>Hoặc đăng ký bằng</span>
+                    </div>
+                    
+                    <div class="social-buttons">
+                        <a href="#" class="social-btn google" onclick="socialLogin('google')">
+                            <i class="fab fa-google"></i>
+                            Đăng ký với Google
+                        </a>
+                        <a href="#" class="social-btn facebook" onclick="socialLogin('facebook')">
+                            <i class="fab fa-facebook-f"></i>
+                            Đăng ký với Facebook
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Forgot Password Form (Hidden by default) -->
+            <div class="auth-form" id="forgotPasswordForm" style="display: none;">
+                <div class="form-header">
+                    <h2 class="form-title">Quên mật khẩu?</h2>
+                    <p class="form-subtitle">
+                        Nhập email của bạn để nhận link đặt lại mật khẩu
+                    </p>
+                </div>
+
+                <form id="forgot-password-form">
+                    <div class="form-group">
+                        <label class="form-label" for="forgot-email">Email</label>
+                        <input 
+                            type="email" 
+                            id="forgot-email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="Nhập email đã đăng ký"
+                            required
+                        >
+                        <div class="form-message error" id="forgot-email-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="forgot-btn">
+                        <i class="fas fa-paper-plane"></i> Gửi link đặt lại
+                    </button>
+                </form>
+
+                <div class="form-switch">
+                    <p>
+                        <a href="#" onclick="switchToLogin()" class="switch-link">
+                            <i class="fas fa-arrow-left"></i> Quay lại đăng nhập
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // =========================
+        // FORM SWITCHING
+        // =========================
+        function switchToLogin() {
+            document.getElementById('loginForm').style.display = 'flex';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            clearAllErrors();
+        }
+
+        function switchToRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'flex';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            clearAllErrors();
+        }
+
+        function showForgotPassword() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'flex';
+            clearAllErrors();
+        }
+
+        // =========================
+        // PASSWORD TOGGLE
+        // =========================
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // =========================
+        // PASSWORD STRENGTH CHECKER
+        // =========================
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let feedback = [];
+
+            // Length check
+            if (password.length >= 8) {
+                strength += 1;
+            } else {
+                feedback.push('Ít nhất 8 ký tự');
+            }
+
+            // Uppercase check
+            if (/[A-Z]/.test(password)) {
+                strength += 1;
+            } else {
+                feedback.push('Ít nhất 1 chữ hoa');
+            }
+
+            // Lowercase check
+            if (/[a-z]/.test(password)) {
+                strength += 1;
+            } else {
+                feedback.push('Ít nhất 1 chữ thường');
+            }
+
+            // Number check
+            if (/[0-9]/.test(password)) {
+                strength += 1;
+            } else {
+                feedback.push('Ít nhất 1 số');
+            }
+
+            // Special character check
+            if (/[^A-Za-z0-9]/.test(password)) {
+                strength += 1;
+            } else {
+                feedback.push('Ít nhất 1 ký tự đặc biệt');
+            }
+
+            return { strength, feedback };
+        }
+
+        function updatePasswordStrength(password) {
+            const result = checkPasswordStrength(password);
+            const strengthFill = document.getElementById('strength-fill');
+            const strengthText = document.getElementById('strength-text');
+
+            // Remove all classes
+            strengthFill.className = 'strength-fill';
+
+            if (password.length === 0) {
+                strengthText.textContent = '';
+                return;
+            }
+
+            if (result.strength <= 2) {
+                strengthFill.classList.add('weak');
+                strengthText.textContent = 'Mật khẩu yếu';
+                strengthText.style.color = 'var(--error-red)';
+            } else if (result.strength <= 4) {
+                strengthFill.classList.add('medium');
+                strengthText.textContent = 'Mật khẩu trung bình';
+                strengthText.style.color = 'var(--warning-yellow)';
+            } else {
+                strengthFill.classList.add('strong');
+                strengthText.textContent = 'Mật khẩu mạnh';
+                strengthText.style.color = 'var(--success-green)';
+            }
+        }
+
+        // =========================
+        // FORM VALIDATION
+        // =========================
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const errorDiv = document.getElementById(inputId + '-error');
+            
+            input.classList.add('error');
+            input.classList.remove('success');
+            
+            if (errorDiv) {
+                errorDiv.querySelector('span').textContent = message;
+                errorDiv.style.display = 'flex';
+            }
+        }
+
+        function showSuccess(inputId) {
+            const input = document.getElementById(inputId);
+            const errorDiv = document.getElementById(inputId + '-error');
+            
+            input.classList.remove('error');
+            input.classList.add('success');
+            
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+        }
+
+        function clearError(inputId) {
+            const input = document.getElementById(inputId);
+            const errorDiv = document.getElementById(inputId + '-error');
+            
+            input.classList.remove('error', 'success');
+            
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+        }
+
+        function clearAllErrors() {
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                clearError(input.id);
+            });
+        }
+
+        // =========================
+        // EMAIL VALIDATION
+        // =========================
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // =========================
+        // FORM HANDLING
+        // =========================
+        
+        // Login Form
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            
+            let isValid = true;
+
+            // Email validation
+            if (!email) {
+                showError('login-email', 'Vui lòng nhập email');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('login-email', 'Email không hợp lệ');
+                isValid = false;
+            } else {
+                showSuccess('login-email');
+            }
+
+            // Password validation
+            if (!password) {
+                showError('login-password', 'Vui lòng nhập mật khẩu');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('login-password', 'Mật khẩu phải có ít nhất 6 ký tự');
+                isValid = false;
+            } else {
+                showSuccess('login-password');
+            }
+
+            if (isValid) {
+                const loginBtn = document.getElementById('login-btn');
+                loginBtn.classList.add('loading');
+                loginBtn.disabled = true;
+
+                try {
+                    // Simulate API call
+                    await simulateLogin(email, password, rememberMe);
+                    
+                    // Redirect to main page
+                    window.location.href = 'index.html';
+                    
+                } catch (error) {
+                    showError('login-password', 'Email hoặc mật khẩu không đúng');
+                } finally {
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                }
+            }
+        });
+
+        // Register Form
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fullname = document.getElementById('register-fullname').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const agreeTerms = document.getElementById('agree-terms').checked;
+            
+            let isValid = true;
+
+            // Fullname validation
+            if (!fullname.trim()) {
+                showError('register-fullname', 'Vui lòng nhập họ và tên');
+                isValid = false;
+            } else if (fullname.trim().length < 2) {
+                showError('register-fullname', 'Họ và tên phải có ít nhất 2 ký tự');
+                isValid = false;
+            } else {
+                showSuccess('register-fullname');
+            }
+
+            // Email validation
+            if (!email) {
+                showError('register-email', 'Vui lòng nhập email');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('register-email', 'Email không hợp lệ');
+                isValid = false;
+            } else {
+                showSuccess('register-email');
+            }
+
+            // Password validation
+            const passwordStrength = checkPasswordStrength(password);
+            if (!password) {
+                showError('register-password', 'Vui lòng nhập mật khẩu');
+                isValid = false;
+            } else if (passwordStrength.strength < 3) {
+                showError('register-password', 'Mật khẩu quá yếu. ' + passwordStrength.feedback.join(', '));
+                isValid = false;
+            } else {
+                showSuccess('register-password');
+            }
+
+            // Confirm password validation
+            if (!confirmPassword) {
+                showError('register-confirm-password', 'Vui lòng xác nhận mật khẩu');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('register-confirm-password', 'Mật khẩu xác nhận không khớp');
+                isValid = false;
+            } else {
+                showSuccess('register-confirm-password');
+            }
+
+            // Terms validation
+            if (!agreeTerms) {
+                alert('Vui lòng đồng ý với điều khoản dịch vụ');
+                isValid = false;
+            }
+
+            if (isValid) {
+                const registerBtn = document.getElementById('register-btn');
+                registerBtn.classList.add('loading');
+                registerBtn.disabled = true;
+
+                try {
+                    // Simulate API call
+                    await simulateRegister(fullname, email, password);
+                    
+                    alert('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
+                    switchToLogin();
+                    
+                } catch (error) {
+                    showError('register-email', 'Email đã tồn tại hoặc có lỗi xảy ra');
+                } finally {
+                    registerBtn.classList.remove('loading');
+                    registerBtn.disabled = false;
+                }
+            }
+        });
+
+        // Forgot Password Form
+        document.getElementById('forgot-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgot-email').value;
+            let isValid = true;
+
+            // Email validation
+            if (!email) {
+                showError('forgot-email', 'Vui lòng nhập email');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('forgot-email', 'Email không hợp lệ');
+                isValid = false;
+            } else {
+                showSuccess('forgot-email');
+            }
+
+            if (isValid) {
+                const forgotBtn = document.getElementById('forgot-btn');
+                forgotBtn.classList.add('loading');
+                forgotBtn.disabled = true;
+
+                try {
+                    // Simulate API call
+                    await simulateForgotPassword(email);
+                    
+                    alert('Link đặt lại mật khẩu đã được gửi đến email của bạn!');
+                    switchToLogin();
+                    
+                } catch (error) {
+                    showError('forgot-email', 'Email không tồn tại trong hệ thống');
+                } finally {
+                    forgotBtn.classList.remove('loading');
+                    forgotBtn.disabled = false;
+                }
+            }
+        });
+
+        // =========================
+        // API SIMULATION
+        // =========================
+        async function simulateLogin(email, password, rememberMe) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Check demo credentials
+            const demoUsers = [
+                { email: 'demo@aiworld.com', password: '123456' },
+                { email: 'admin@aiworld.com', password: 'admin123' }
+            ];
+            
+            const user = demoUsers.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Store user data
+                const userData = {
+                    email: email,
+                    name: email.split('@')[0],
+                    loginTime: new Date().toISOString(),
+                    rememberMe: rememberMe
+                };
+                
+                // Store in appropriate storage
+                if (rememberMe) {
+                    localStorage.setItem('aiworld_user', JSON.stringify(userData));
+                } else {
+                    sessionStorage.setItem('aiworld_user', JSON.stringify(userData));
+                }
+                
+                return userData;
+            } else {
+                throw new Error('Invalid credentials');
+            }
+        }
+
+        async function simulateRegister(fullname, email, password) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Check if email already exists (simple demo check)
+            const existingEmails = ['test@example.com', 'admin@aiworld.com'];
+            
+            if (existingEmails.includes(email)) {
+                throw new Error('Email already exists');
+            }
+            
+            // Simulate successful registration
+            const userData = {
+                fullname: fullname,
+                email: email,
+                registrationTime: new Date().toISOString()
+            };
+            
+            return userData;
+        }
+
+        async function simulateForgotPassword(email) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Simulate successful password reset request
+            return { success: true };
+        }
+
+        // =========================
+        // SOCIAL LOGIN
+        // =========================
+        function socialLogin(provider) {
+            alert(`Đăng nhập với ${provider} sẽ được triển khai trong phiên bản tiếp theo!`);
+            
+            // In real implementation, you would redirect to OAuth provider
+            // window.location.href = `https://api.aiworld.com/auth/${provider}`;
+        }
+
+        // =========================
+        // EVENT LISTENERS
+        // =========================
+        
+        // Password strength checker for register form
+        document.getElementById('register-password').addEventListener('input', function(e) {
+            updatePasswordStrength(e.target.value);
+        });
+
+        // Real-time validation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add input event listeners for real-time validation
+            const inputs = document.querySelectorAll('.form-input');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('error')) {
+                        clearError(this.id);
+                    }
+                });
+
+                input.addEventListener('blur', function() {
+                    // Validate on blur
+                    if (this.value.trim() !== '') {
+                        validateField(this);
+                    }
+                });
+            });
+        });
+
+        function validateField(input) {
+            const value = input.value.trim();
+            const name = input.name;
+
+            switch (name) {
+                case 'email':
+                    if (!validateEmail(value)) {
+                        showError(input.id, 'Email không hợp lệ');
+                    } else {
+                        showSuccess(input.id);
+                    }
+                    break;
+
+                case 'fullname':
+                    if (value.length < 2) {
+                        showError(input.id, 'Họ và tên phải có ít nhất 2 ký tự');
+                    } else {
+                        showSuccess(input.id);
+                    }
+                    break;
+
+                case 'password':
+                    if (input.id === 'register-password') {
+                        const strength = checkPasswordStrength(value);
+                        if (strength.strength < 3) {
+                            showError(input.id, 'Mật khẩu quá yếu');
+                        } else {
+                            showSuccess(input.id);
+                        }
+                    } else if (value.length < 6) {
+                        showError(input.id, 'Mật khẩu phải có ít nhất 6 ký tự');
+                    } else {
+                        showSuccess(input.id);
+                    }
+                    break;
+
+                case 'confirmPassword':
+                    const passwordField = document.getElementById('register-password');
+                    if (value !== passwordField.value) {
+                        showError(input.id, 'Mật khẩu xác nhận không khớp');
+                    } else {
+                        showSuccess(input.id);
+                    }
+                    break;
+            }
+        }
+
+        // =========================
+        // CHECK AUTH STATUS
+        // =========================
+        function checkAuthStatus() {
+            const userData = localStorage.getItem('aiworld_user') || sessionStorage.getItem('aiworld_user');
+            
+            if (userData) {
+                // User is already logged in, redirect to main page
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Trong hàm simulateLogin, thay đổi:
+
+        // Và thêm vào đầu trang auth.html:
+        // Check if already logged in
+        window.addEventListener('load', function() {
+            const userData = localStorage.getItem('aiworld_user') || sessionStorage.getItem('aiworld_user');
+            if (userData) {
+                window.location.href = 'index.html';
+            }
+            
+            // Check URL hash for register
+            if (window.location.hash === '#register') {
+                switchToRegister();
+            }
+        });
+
+        // Check auth status when page loads
+        window.addEventListener('load', checkAuthStatus);
+
+        // =========================
+        // KEYBOARD SHORTCUTS
+        // =========================
+        document.addEventListener('keydown', function(e) {
+            // Enter key to submit forms
+            if (e.key === 'Enter' && e.target.classList.contains('form-input')) {
+                const form = e.target.closest('form');
+                if (form) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+
+            // Escape key to clear errors
+            if (e.key === 'Escape') {
+                clearAllErrors();
+            }
+        });
+
+        // =========================
+        // ACCESSIBILITY ENHANCEMENTS
+        // =========================
+        
+        // Focus management
+        function focusFirstInput() {
+            const visibleForm = document.querySelector('.auth-form[style*="flex"], .auth-form:not([style*="none"])');
+            if (visibleForm) {
+                const firstInput = visibleForm.querySelector('.form-input');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }
+        }
+
+        // Focus first input when switching forms
+        window.switchToLogin = function() {
+            document.getElementById('loginForm').style.display = 'flex';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            clearAllErrors();
+            setTimeout(focusFirstInput, 100);
+        };
+
+        window.switchToRegister = function() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'flex';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            clearAllErrors();
+            setTimeout(focusFirstInput, 100);
+        };
+
+        window.showForgotPassword = function() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'flex';
+            clearAllErrors();
+            setTimeout(focusFirstInput, 100);
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Auth page loaded successfully!');
+            focusFirstInput();
+        });
+    </script>
+</body>
+</html>
